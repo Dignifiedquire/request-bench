@@ -1,0 +1,20 @@
+{
+  "name": "bench",
+  "version": "1.0.0",
+  "description": "",
+  "main": "base.js",
+  "dependencies": {
+    "async": "^1.5.0",
+    "benchmark": "^1.0.0",
+    "microtime": "^2.0.0",
+    "request": "^2.67.0",
+    "wreck": "^7.0.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
