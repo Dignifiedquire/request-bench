@@ -6,6 +6,8 @@ const fs = require('fs')
 const request = require('request')
 const async = require('async')
 const Wreck = require('wreck')
+const mkdirp = require('mkdirp')
+const rimraf = require('rimraf')
 
 const suite = new Suite()
 
@@ -13,11 +15,21 @@ const basePath = `${__dirname}/downloads`
 
 const files = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(i => `${i}.zip`)
 
+function setup () {
+  mkdirp.sync(basePath)
+}
+
+function teardown () {
+  rimraf.sync(basePath)
+}
+
 suite.add('core - defaults', {
   defer: true,
+  setup: setup,
+  teardown: teardown,
   fn: deferred => {
     function makeRequest(name, done) {
-      var file = fs.createWriteStream(`${basePath}/core-defaults/${name}`)
+      var file = fs.createWriteStream(`${basePath}/${name}`)
       var req = http.request({
         port: 80,
         hostname: '127.0.0.1',
@@ -36,6 +48,8 @@ suite.add('core - defaults', {
 })
 suite.add('core - keepalive', {
   defer: true,
+  setup: setup,
+  teardown: teardown,
   fn: deferred => {
     var agent = new http.Agent({
       keepAlive: true,
@@ -44,7 +58,7 @@ suite.add('core - keepalive', {
       maxFreeSockets: 3
     })
     function makeRequest(name, done) {
-      var file = fs.createWriteStream(`${basePath}/core-keepalive/${name}`)
+      var file = fs.createWriteStream(`${basePath}/${name}`)
       var req = http.request({
         port: 80,
         hostname: '127.0.0.1',
@@ -67,9 +81,11 @@ suite.add('core - keepalive', {
 })
 .add('request - defaults', {
   defer: true,
+  setup: setup,
+  teardown: teardown,
   fn: deferred => {
     function makeRequest(name, done) {
-      var file = fs.createWriteStream(`${basePath}/req-defaults/${name}`)
+      var file = fs.createWriteStream(`${basePath}/${name}`)
       request(`http://127.0.0.1/${name}`, (err, resp, body) => {
         resp.pipe(file)
         file.on('finish', done)
@@ -81,9 +97,11 @@ suite.add('core - keepalive', {
 })
 .add('request - keepalive', {
   defer: true,
+  setup: setup,
+  teardown: teardown,
   fn: deferred => {
     function makeRequest(name, done) {
-      var file = fs.createWriteStream(`${basePath}/req-keepalive/${name}`)
+      var file = fs.createWriteStream(`${basePath}/${name}`)
       request({
         uri: `http://127.0.0.1/${name}`,
         method: 'GET',
@@ -99,9 +117,11 @@ suite.add('core - keepalive', {
 })
 .add('wreck - defaults', {
   defer: true,
+  setup: setup,
+  teardown: teardown,
   fn: deferred => {
     function makeRequest(name, done) {
-      var file = fs.createWriteStream(`${basePath}/wreck-defaults/${name}`)
+      var file = fs.createWriteStream(`${basePath}/${name}`)
       Wreck.request('GET', `http://127.0.0.1/${name}`, {}, (err, resp) => {
         resp.pipe(file)
         file.on('finish', done)
